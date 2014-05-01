@@ -9,7 +9,6 @@ use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\Event\Event;
 
-
 class TaxonomyBehavior extends Behavior {
 
 	public function __construct(Table $table, array $config = []) {
@@ -38,11 +37,10 @@ class TaxonomyBehavior extends Behavior {
         ]);
     }
 
-    public function beforeFind(Event $event, $query)
+    public function beforeFind(Event $event, $query, $options = [])
     {
         $contain = ['TermsRelationships' => ['Terms']];
         $query->contain($contain);
-        debug($query);
         // $query->formatResults(function($results) {
         //     return $this->_rowMapper($results);
         // }, $query::PREPEND);
