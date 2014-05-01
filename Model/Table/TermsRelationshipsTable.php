@@ -8,7 +8,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 
 	public function initialize(array $config)
 	{
-        $this->hasMany('Terms', [
+        $this->belongsTo('Terms', [
         	'className' => 'Taxonomy\Model\Table\TermsTable',
         	'foreignKey' => 'term_id',
         ]);

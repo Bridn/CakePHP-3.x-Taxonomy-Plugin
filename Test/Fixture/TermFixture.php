@@ -12,7 +12,8 @@ class TermFixture extends TestFixture {
  */
   public $fields = array(
     'id' => ['type' => 'integer'],
-    'name' => ['type' => 'string', 'null' => false],
+    'title' => ['type' => 'string', 'null' => false],
+    'type' => ['type' => 'string', 'null' => false],
     '_constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
   );
 
@@ -22,8 +23,8 @@ class TermFixture extends TestFixture {
  * @var array
  */
   public $records = array(
-    array('name' => 'tag1'),
-    array('name' => 'tag2'),
-    array('name' => 'tag3')
+    array('id' => 1, 'title' => 'cake', 'type' => 'tag'),
+    array('id' => 2, 'title' => 'food', 'type' => 'tag'),
+    array('id' => 3, 'title' => 'apple', 'type' => 'tag')
   );
 }

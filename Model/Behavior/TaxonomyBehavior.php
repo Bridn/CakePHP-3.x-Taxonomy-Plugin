@@ -14,26 +14,26 @@ class TaxonomyBehavior extends Behavior {
 	public function __construct(Table $table, array $config = []) {
 		parent::__construct($table, $config);
 		$this->_table = $table;
-		$this->_processAssociations($this->_table);
+		$this->_processAssociations();
 	}
 
-	public function _processAssociations($table)
+	protected function _processAssociations()
 	{
-        $this->_table->hasMany('TermsRelationships', [
-        	'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
-        	'foreignKey' => 'relationship_id',
-        	'conditions' => 'TermsRelationships.table = "'.$this->_table->alias().'"',
-        	'dependent' => true
+        $termsRelationships = TableRegistry::get('Taxonomy.TermsRelationshipsTable', [
+            'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable'
         ]);
 
-        $termsRelationships = TableRegistry::get('Taxonomy.TermsTable', [
-            'className' => 'Taxonomy\Model\Table\TermsTable'
+        $this->_table->hasMany('TermsRelationships', [
+        	'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
+        	'foreignKey' => 'reference_id',
+        	'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
+        	'dependent' => true
         ]);
 
         $termsRelationships->belongsTo($this->_table->alias(), [
             'className' => $this->_table->alias(),
-            'foreignKey' => 'relationship_id',
-            'conditions' => 'TermsRelationships.table = "'.$this->_table->alias().'"',
+            'foreignKey' => 'reference_id',
+            'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
         ]);
     }
 
