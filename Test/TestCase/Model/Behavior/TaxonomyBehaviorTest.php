@@ -8,13 +8,19 @@ use Cake\ORM\TableRegistry;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\Event\Event;
-use Taxonomy\Model\Behavior\Taxonomy;
 use Cake\TestSuite\TestCase;
+use Taxonomy\Model\Behavior\Taxonomy;
 
 /**
  * Used for testing taxonomy
  */
-class ArticleTable extends Table {
+class ArticlesTable extends Table {
+
+	public function initialize(array $config)
+	{
+		$this->addBehavior('Taxonomy.Taxonomy');
+	}
+
 }
 
 class TaxonomyBehaviorTest extends TestCase {
@@ -26,8 +32,8 @@ class TaxonomyBehaviorTest extends TestCase {
  */
 	public $fixtures = [
 		'plugin.taxonomy.taxonomy_article',
-		'plugin.taxonomy.terms_relationship',
-		'plugin.taxonomy.term'
+		'plugin.taxonomy.taxonomy_terms_relationship',
+		'plugin.taxonomy.taxonomy_term'
 	];
 
 /**
@@ -38,11 +44,44 @@ class TaxonomyBehaviorTest extends TestCase {
     public function setUp() {
     	parent::setUp();
     	$this->connection = ConnectionManager::get('test');
-    	$this->article = new ArticleTable([
+
+    	$this->article = $article = new ArticlesTable([
 			'alias' => 'Article',
+			'plugin' => 'Taxonomy',
 			'table' => 'taxonomy_articles',
 			'connection' => $this->connection
 		]);
+
+		$this->article->termsrelationships = $this->getMock(
+			'Taxonomy\Model\Table\TermsRelationshipsTable',
+			[],
+			[
+				'options' => [
+					'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
+					'table' => 'taxonomy_terms_relationships',
+					'connection' => 'test'
+				]
+			]
+		);
+		// TableRegistry::get('Taxonomy.TermsRelationships', [
+		// 	'table' => 'taxonomy_terms_relationships',
+		// 	'connection' => $this->connection
+		// ]);
+
+		$this->article->termsrelationships->terms = $this->getMock(
+			'Taxonomy\Model\Table\TermsTable',
+			['config'],
+			[
+				'options' => [
+					'table' => 'taxonomy_terms',
+					'connection' => 'test'
+				]
+			]
+		);
+		// $this->term = TableRegistry::get('Taxonomy.Terms', [
+		// 	'table' => 'taxonomy_terms',
+		// 	'connection' => $this->connection
+		// ]);
     }
 
 /**
@@ -52,7 +91,7 @@ class TaxonomyBehaviorTest extends TestCase {
  */
 	public function tearDown() {
 		parent::tearDown();
-		unset($this->article);
+		unset($this->article, $this->termsRelationship, $this->term);
 		TableRegistry::clear();
 	}
 
@@ -63,7 +102,6 @@ class TaxonomyBehaviorTest extends TestCase {
  */
     public function testBeforeFind() {
     	$this->_processAssociations();
-		$this->article->addBehavior('Taxonomy.Taxonomy');
 		$row = $this->_getArticle();
 		$expected = [
 			'id' => 1,
@@ -71,13 +109,15 @@ class TaxonomyBehaviorTest extends TestCase {
 			'body' => 'First Article Body',
 			'terms_relationships' => [
 				0 => [
+					'id' => 1,
 					'reference_id' => 1,
 					'reference_model' => 'Article',
 					'term_id' => 1,
 					'term' => [
 						'id' => 1,
 						'title' => 'cake',
-						'type' => 'tag'
+						'type' => 'tag',
+						'term_count' => 1
 					]
 				]
 			],
@@ -92,20 +132,15 @@ class TaxonomyBehaviorTest extends TestCase {
  */
 	protected function _processAssociations()
 	{
-		$termsRelationships = TableRegistry::get('TermsRelationshipsTable', [
-			'table' => 'terms_relationships',
-			'connection' => $this->connection
-		]);
-
         $this->article->hasMany('TermsRelationships', [
-        	'table' => 'terms_relationships',
+        	'table' => 'taxonomy_terms_relationships',
         	'foreignKey' => 'reference_id',
         	'conditions' => 'TermsRelationships.reference_model = "'.$this->article->alias().'"',
         	'dependent' => true,
         	'connection' => $this->connection
         ]);
 
-        $termsRelationships->belongsTo($this->article->alias(), [
+        $this->article->termsrelationships->belongsTo($this->article->alias(), [
             'className' => $this->article->alias(),
             'foreignKey' => 'reference_id',
             'conditions' => 'TermsRelationships.reference_model = "'.$this->article->alias().'"',
@@ -114,12 +149,79 @@ class TaxonomyBehaviorTest extends TestCase {
     }
 
 /**
+ * Get a new Article
+ *
+ * @return Entity
+ */
+	protected function _getNewArticle() {
+		return new Entity([
+			'id' => 4,
+			'title' => 'New Article',
+			'body' => 'A New Body'
+		]);
+	}
+
+/**
+ * Get a new Term
+ *
+ * @return Entity
+ */
+	protected function _getNewTerm() {
+		return new Entity([
+			'id' => 4,
+			'title' => 'fresh',
+			'type' => 'tag'
+		]);
+	}
+
+/**
+ * Get a new TermRelationship
+ *
+ * @return Entity
+ */
+	protected function _getNewTermRelationship() {
+		return new Entity([
+			'id' => 5,
+			'reference_id' => 1,
+			'reference_model' => 'Article',
+			'term_id' => 4
+		]);
+	}
+
+/**
  * Returns entity for article 1
  *
  * @return Entity
  */
 	protected function _getArticle() {
 		return $this->article->find('all')->where(['id' => 1])->first();
+	}
+
+/**
+ * Returns entity for all articles
+ *
+ * @return Entity
+ */
+	protected function _getAllArticles() {
+		return $this->article->find('all')->toArray();
+	}
+
+/**
+ * Returns entity for term 1
+ *
+ * @return Entity
+ */
+	protected function _getTerm() {
+		return $this->term->find('all')->where(['id' => 1])->first();
+	}
+
+/**
+ * Returns entity for all terms_relationships
+ *
+ * @return Entity
+ */
+	protected function _getAllTermsRelationships() {
+		return $this->termsRelationship->find('all')->toArray();
 	}
 
 }
