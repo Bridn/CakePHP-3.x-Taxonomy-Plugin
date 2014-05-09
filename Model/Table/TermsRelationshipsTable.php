@@ -12,10 +12,9 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
         	'className' => 'Taxonomy\Model\Table\TermsTable',
         	'foreignKey' => 'term_id',
         ]);
-        //$this->addBehavior('Timestamp');
     }
 
-    public function addRelationship($entity, $termID = null, $table = null)
+    public function addRelationship($entity, $termID, $table)
     {
         $data = [
             'reference_id' => $entity->id,
