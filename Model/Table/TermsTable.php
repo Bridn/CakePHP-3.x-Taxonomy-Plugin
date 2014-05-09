@@ -13,6 +13,7 @@ class TermsTable extends TaxonomiesAppTable {
         	'foreignKey' => 'term_id',
         	'dependent' => true,
         ]);
+        $this->addBehavior('Timestamp');
     }
 
     //add a single Term
@@ -27,21 +28,24 @@ class TermsTable extends TaxonomiesAppTable {
     }
 
     //add and Hydrate relationship table
-    public function addAndHydrate($entity, $table)
+    public function addAndHydrate($entity, $table = null)
     {
-    	foreach($entity->Taxonomy as $type => $terms)
-    	{
-    		$terms = $this->_inputExplode($terms);
-    		foreach($terms as $term)
-    		{
-    			if($this->_checkTerm($term))
-    			{
-		    		$data = array('type' => $type, 'title' => $term);
-		    		$termID = $this->addTerm($data);
-		    		$this->termsrelationships->addRelationship($entity, $termID, $table);
-	    		}
-    		}
-    	}
+        if ( !is_null($entity->Taxonomy) )
+        {
+        	foreach($entity->Taxonomy as $type => $terms)
+        	{
+        		$terms = $this->_inputExplode($terms);
+        		foreach($terms as $term)
+        		{
+        			if($this->_checkTerm($term))
+        			{
+    		    		$data = array('type' => $type, 'title' => $term);
+    		    		$termID = $this->addTerm($data);
+    		    		$this->termsrelationships->addRelationship($entity, $termID, $table);
+    	    		}
+        		}
+        	}
+        }
     }
 
     //Explode term string
