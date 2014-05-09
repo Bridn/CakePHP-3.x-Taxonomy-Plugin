@@ -11,7 +11,11 @@ use Cake\Utility\Hash;
 
 class TaxonomyBehavior extends Behavior {
 
-	public function __construct(Table $table, array $config = []) {
+	/**
+     * Construct
+     * @param Table $table, array $config
+     */
+    public function __construct(Table $table, array $config = []) {
 		parent::__construct($table, $config);
 		$this->_table = $table;
         $this->termsRelationship = TableRegistry::get('Taxonomy.TermsRelationships', [
@@ -20,6 +24,9 @@ class TaxonomyBehavior extends Behavior {
 		$this->_processAssociations();
 	}
 
+    /**
+     * Process Associations
+     */
 	protected function _processAssociations()
 	{
         $this->_table->hasMany('TermsRelationships', [
@@ -36,6 +43,12 @@ class TaxonomyBehavior extends Behavior {
         ]);
     }
 
+    /**
+     * BeforeFind Callback
+     * Add Terms to the model queries
+     * Return Term properties parameters as null if title is null
+     * @param Event $event, $query, array $options
+     */
     public function beforeFind(Event $event, $query, $options = [])
     {
         $query->contain([
@@ -49,9 +62,13 @@ class TaxonomyBehavior extends Behavior {
                 ]
             ]
         ]);
-
     }
 
+    /**
+     * AfterSave Callback
+     * Add Terms to the model
+     * @param Event $event, Entity $entity
+     */
     public function afterSave(Event $event, Entity $entity)
     {
         $this->termsRelationship->terms->addAndHydrate($entity, $this->_table->alias());

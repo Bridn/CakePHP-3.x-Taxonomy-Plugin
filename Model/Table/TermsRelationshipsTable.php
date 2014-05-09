@@ -6,6 +6,10 @@ use Taxonomy\Model\Table\TaxonomiesAppTable;
 
 class TermsRelationshipsTable extends TaxonomiesAppTable {
 
+    /**
+     * Initialize
+     * @param $config
+     */
 	public function initialize(array $config)
 	{
         $this->belongsTo('Taxonomy.Terms', [
@@ -15,6 +19,10 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
         $this->addBehavior('Timestamp');
     }
 
+    /**
+     * Add a term relationship
+     * @param $entity, $termID, $table alias
+     */
     public function addRelationship($entity, $termID = null, $table = null)
     {
         $data = [

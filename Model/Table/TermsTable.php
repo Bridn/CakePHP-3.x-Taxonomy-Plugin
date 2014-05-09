@@ -6,6 +6,10 @@ use Taxonomy\Model\Table\TaxonomiesAppTable;
 
 class TermsTable extends TaxonomiesAppTable {
 
+    /**
+     * Initialize
+     * @param $config
+     */
 	public function initialize(array $config)
 	{
         $this->hasMany('Taxonomy.TermsRelationships', [
@@ -16,7 +20,10 @@ class TermsTable extends TaxonomiesAppTable {
         $this->addBehavior('Timestamp');
     }
 
-    //add a single Term
+    /**
+     * Add a single Term without relationships
+     * @param $data
+     */
     public function addTerm(array $data)
     {
         $term = $this->newEntity($data);
@@ -27,17 +34,20 @@ class TermsTable extends TaxonomiesAppTable {
         }
     }
 
-    //add and Hydrate relationship table
+    /**
+     * Add terms and hydrate relationships
+     * @param $entity, $table
+     */
     public function addAndHydrate($entity, $table = null)
     {
-        if ( !is_null($entity->Taxonomy) )
+        if ( ! is_null($entity->Taxonomy) )
         {
         	foreach($entity->Taxonomy as $type => $terms)
         	{
         		$terms = $this->_inputExplode($terms);
         		foreach($terms as $term)
         		{
-        			if($this->_checkTerm($term))
+        			if ($this->_checkTerm($term))
         			{
     		    		$data = array('type' => $type, 'title' => $term);
     		    		$termID = $this->addTerm($data);
@@ -48,7 +58,11 @@ class TermsTable extends TaxonomiesAppTable {
         }
     }
 
-    //Explode term string
+    /**
+     * Explode string by ';' to array
+     * @param $terms
+     * @return  $terms [array]
+     */
     private function _inputExplode($terms)
     {
 		if (is_string($terms))
@@ -60,10 +74,14 @@ class TermsTable extends TaxonomiesAppTable {
 		return $terms;
     }
 
-    //Check if term is not empty
+    /**
+     * Delete white spaces
+     * @param $term
+     * @return false [if Term is empty]
+     */
     private function _checkTerm($term)
     {
-    	if(trim($term) !== '')
+    	if (trim($term) !== '')
     	{
     		return $term;
     	}
