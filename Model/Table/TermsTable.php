@@ -3,6 +3,8 @@
 use Cake\ORM\Table;
 use Cake\ORM\Query;
 use Taxonomy\Model\Table\TaxonomiesAppTable;
+use Cake\ORM\Entity;
+use Cake\Event\Event;
 
 class TermsTable extends TaxonomiesAppTable {
 
@@ -21,13 +23,23 @@ class TermsTable extends TaxonomiesAppTable {
     }
 
     /**
+     * Find First By Title
+     * @param $term
+     * @return void
+     */
+    public function findFirstByTitle($title)
+    {
+        return $this->find()->where(['title' => $title])->first();
+    }
+
+    /**
      * Add a single Term without relationships
      * @param $data
      */
     public function addTerm(array $data)
     {
         $term = $this->newEntity($data);
-        if($this->_checkTerm($term))
+        if($this->_notEmptyTerm($term))
     	{
        		$this->save($term);
         	return $term->id;
@@ -47,7 +59,7 @@ class TermsTable extends TaxonomiesAppTable {
         		$terms = $this->_inputExplode($terms);
         		foreach($terms as $term)
         		{
-        			if ($this->_checkTerm($term))
+        			if ($this->_notEmptyTerm($term))
         			{
     		    		$data = array('type' => $type, 'title' => $term);
     		    		$termID = $this->addTerm($data);
@@ -75,17 +87,32 @@ class TermsTable extends TaxonomiesAppTable {
     }
 
     /**
-     * Delete white spaces
+     * Check if Term is not empty
      * @param $term
      * @return false [if Term is empty]
      */
-    private function _checkTerm($term)
+    private function _notEmptyTerm($term)
     {
     	if (trim($term) !== '')
     	{
     		return $term;
     	}
     	return false;
+    }
+
+    /**
+     * Update term if exist
+     * @param Event $event, Entity $entity
+     * @return boolean
+     */
+    public function beforeSave(Event $event, Entity $entity)
+    {
+        $term = $this->findFirstByTitle($entity->title);
+        if (!is_null($term))
+        {
+            //doesn't work
+            $entity = $this->get($term->id);
+        }
     }
 
 }
