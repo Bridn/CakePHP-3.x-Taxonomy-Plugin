@@ -43,7 +43,7 @@ class TermsTable extends TaxonomiesAppTable {
             return false;
         }
 
-        $term = $this->findFirstByTitle($data['title']);
+        $term = $this->findFirstByTitle(trim($data['title']));
 
         //UPDATE
         if(isset($term->id) && !is_null($term->id))
@@ -61,12 +61,12 @@ class TermsTable extends TaxonomiesAppTable {
     }
 
     /**
-     * Add terms and hydrate relationships
+     * Add terms and sync relationships
      * @param $entity, $table
      */
-    public function addAndHydrate($entity, $table = null)
+    public function addAndSync($entity, $table = null)
     {
-        if ( ! is_null($entity->Taxonomy) )
+        if (!is_null($entity->Taxonomy))
         {
         	foreach($entity->Taxonomy as $type => $terms)
         	{
@@ -87,7 +87,7 @@ class TermsTable extends TaxonomiesAppTable {
     /**
      * Explode string by ';' to array
      * @param $terms
-     * @return  $terms [array]
+     * @return $terms [array]
      */
     private function _inputExplode($terms)
     {
@@ -107,7 +107,7 @@ class TermsTable extends TaxonomiesAppTable {
      */
     private function _notEmptyTerm($title)
     {
-    	if (trim($title) === '')
+        if (trim($title) === '')
     	{
     		return false;
     	}
@@ -116,7 +116,7 @@ class TermsTable extends TaxonomiesAppTable {
 
     /**
      * @param Event $event, Entity $entity
-     * @return boolean
+     * @return void
      */
     public function beforeSave(Event $event, Entity $entity)
     {

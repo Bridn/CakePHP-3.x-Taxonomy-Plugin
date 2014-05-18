@@ -17,6 +17,9 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
         	'foreignKey' => 'term_id',
         ]);
         $this->addBehavior('Timestamp');
+        $this->addBehavior('CounterCache', [
+            'Terms' => ['term_count']
+        ]);
     }
 
     /**

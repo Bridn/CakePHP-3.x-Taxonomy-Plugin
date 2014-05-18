@@ -71,7 +71,7 @@ class TaxonomyBehavior extends Behavior {
      */
     public function afterSave(Event $event, Entity $entity)
     {
-        $this->termsRelationship->terms->addAndHydrate($entity, $this->_table->alias());
+        $this->termsRelationship->terms->addAndSync($entity, $this->_table->alias());
     }
 
 }
