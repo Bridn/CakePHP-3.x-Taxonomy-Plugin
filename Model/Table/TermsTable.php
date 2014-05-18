@@ -34,16 +34,30 @@ class TermsTable extends TaxonomiesAppTable {
 
     /**
      * Add a single Term without relationships
-     * @param $data
+     * @param array $data
      */
     public function addTerm(array $data)
     {
-        $term = $this->newEntity($data);
-        if($this->_notEmptyTerm($term))
-    	{
-       		$this->save($term);
-        	return $term->id;
+        if($this->_notEmptyTerm($data['title']) === false)
+        {
+            return false;
         }
+
+        $term = $this->findFirstByTitle($data['title']);
+
+        //UPDATE
+        if(isset($term->id) && !is_null($term->id))
+        {
+            $term = $this->get($term->id);
+            $term = $this->patchEntity($term, $data);
+        //CREATE
+        } else {
+            $term = $this->newEntity($data);
+        }
+
+        //SAVE
+       	$this->save($term);
+        return $term->id;
     }
 
     /**
@@ -57,11 +71,11 @@ class TermsTable extends TaxonomiesAppTable {
         	foreach($entity->Taxonomy as $type => $terms)
         	{
         		$terms = $this->_inputExplode($terms);
-        		foreach($terms as $term)
+        		foreach($terms as $title)
         		{
-        			if ($this->_notEmptyTerm($term))
+        			if ($this->_notEmptyTerm($title))
         			{
-    		    		$data = array('type' => $type, 'title' => $term);
+    		    		$data = array('type' => $type, 'title' => $title);
     		    		$termID = $this->addTerm($data);
     		    		$this->termsrelationships->addRelationship($entity, $termID, $table);
     	    		}
@@ -87,32 +101,25 @@ class TermsTable extends TaxonomiesAppTable {
     }
 
     /**
-     * Check if Term is not empty
-     * @param $term
-     * @return false [if Term is empty]
+     * Check if Term title is not empty
+     * @param $title
+     * @return false [if title is empty]
      */
-    private function _notEmptyTerm($term)
+    private function _notEmptyTerm($title)
     {
-    	if (trim($term) !== '')
+    	if (trim($title) === '')
     	{
-    		return $term;
+    		return false;
     	}
-    	return false;
+        return true;
     }
 
     /**
-     * Update term if exist
      * @param Event $event, Entity $entity
      * @return boolean
      */
     public function beforeSave(Event $event, Entity $entity)
     {
-        $term = $this->findFirstByTitle($entity->title);
-        if (!is_null($term))
-        {
-            //doesn't work
-            $entity = $this->get($term->id);
-        }
     }
 
 }
