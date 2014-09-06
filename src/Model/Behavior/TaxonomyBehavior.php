@@ -72,12 +72,15 @@ class TaxonomyBehavior extends Behavior {
                 {
                     $terms = array();
                     foreach($row['terms_relationships'] as $k => $v) {
-                        $terms[$k]['title'] = $v['term']['title'];
-                        $terms[$k]['id'] = $v['term']['id'];
+                        $terms[$v['term']['type']][$k] = array(
+                            'title' => $v['term']['title'],
+                            'id' => $v['term']['id'],
+                            'reference_id' => $v['reference_id'],
+                            );
                     }
                     $row['terms_format'] = $terms;
-                    return $row;
                 }
+                return $row;
             });
         });
     }

@@ -10,7 +10,7 @@ class Term extends Entity {
      * @param $title
      * @return $title
      */
-	public function setTitle($title)
+	protected function _setTitle($title)
 	{
         $this->set('slug', Inflector::slug($title));
         $title = trim($title);
