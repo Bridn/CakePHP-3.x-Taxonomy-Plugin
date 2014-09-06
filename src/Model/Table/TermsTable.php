@@ -77,7 +77,10 @@ class TermsTable extends TaxonomiesAppTable {
         			{
     		    		$data = array('type' => $type, 'title' => $title);
     		    		$termID = $this->addTerm($data);
-    		    		$this->termsrelationships->addRelationship($entity, $termID, $table);
+                        if($termID)
+                        {
+    		    		    $this->termsrelationships->addRelationship($entity, $termID, $table);
+                        }
     	    		}
         		}
         	}

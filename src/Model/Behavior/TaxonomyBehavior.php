@@ -70,12 +70,12 @@ class TaxonomyBehavior extends Behavior {
             return $results->map(function($row) {
                 if (!empty($row['terms_relationships']))
                 {
-                    $terms = array();die();
+                    $terms = array();
                     foreach($row['terms_relationships'] as $k => $v) {
                         $terms[$k]['title'] = $v['term']['title'];
                         $terms[$k]['id'] = $v['term']['id'];
                     }
-                    $row['terms_fofrmat'] = $terms;
+                    $row['terms_format'] = $terms;
                     return $row;
                 }
             });
