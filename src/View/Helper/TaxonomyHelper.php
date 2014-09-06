@@ -13,9 +13,6 @@ class TaxonomyHelper extends AppHelper {
      */
 	public function input($type, $options = [])
 	{
-		$options = [
-			'value' => 'un; deux; trois'
-		];
 		return $this->Form->input('Taxonomy.'.$type, $options);
 	}
 }
