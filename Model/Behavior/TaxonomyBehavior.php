@@ -51,7 +51,6 @@ class TaxonomyBehavior extends Behavior {
      */
     public function beforeFind(Event $event, $query, $options = [])
     {
-        debug($query);die();
         $query->contain([
             'TermsRelationships' => [
                 'foreignKey' => 'reference_id',
@@ -63,12 +62,6 @@ class TaxonomyBehavior extends Behavior {
                 ]
             ]
         ]);
-        // return $q->formatResults(function($results, $query) {
-        //         return $results->map(function($row) {
-        //             $row['term'] = 2222;
-        //         return $row;
-        //     });
-        // });
     }
 
     /**
