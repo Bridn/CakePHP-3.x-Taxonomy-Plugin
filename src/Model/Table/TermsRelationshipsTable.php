@@ -3,6 +3,7 @@
 use Cake\ORM\Table;
 use Cake\ORM\Query;
 use Cake\ORM\Entity;
+use Cake\Event\Event;
 use Taxonomy\Model\Table\TaxonomiesAppTable;
 
 
@@ -25,12 +26,23 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
     }
 
     /**
-     * Find all terms by reference_id
-     * @param $reference_id
+     * Find first by reference_id and term_id
+     * @param string $reference_id, string $term_id
      */
-    public function findAllByReferenceID($id = null)
+    public function findFirstByReferenceIDAndTermID($reference_id = null, $term_id = null)
     {
-        return $this->find()->where(['reference_id' => $id])
+        return $this->find()
+        ->where(['reference_id' => $reference_id, 'term_id' => $term_id])
+        ->first();
+    }
+
+    /**
+     * Find all terms by reference_id
+     * @param string $id, string $type
+     */
+    public function findAllByReferenceIDAndType($id = null, $type = null)
+    {
+        return $this->find()->where(['reference_id' => $id, 'Terms.type =' => $type])
         ->contain([
             'Terms' => [
                 'foreignKey' => 'term_id'
@@ -41,18 +53,15 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 
     /**
      * Find first termsRelationship by reference_id, title and type
-     * @param $reference_id, $title, $type
+     * @param string $reference_id, string $title, string $type
      */
-    public function findFirstByRefIDTitleType($reference_id = null, $title = null, $type = null)
+    public function findFirstByReferenceIDAndTitleAndType($reference_id = null, $title = null, $type = null)
     {
         return $this->find()
-        ->where(['reference_id' => $reference_id])
+        ->where(['reference_id' => $reference_id, 'Terms.title =' => $title, 'Terms.type =' => $type])
         ->contain([
             'Terms' => [
-                'foreignKey' => 'term_id',
-                'queryBuilder' => function($q) use($title, $type) {
-                    return $q->where(['Terms.title =' => $title, 'Terms.type =' => $type]);
-                }
+                'foreignKey' => 'term_id'
             ]
         ])
         ->first();
@@ -60,9 +69,9 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 
     /**
      * Add a term relationship
-     * @param $entity, $termID, $table alias
+     * @param Entity $entity, string $termID, string $table (alias)
      */
-    public function addRelationship($entity, $termID = null, $table = null)
+    public function addRelationship(Entity $entity, $termID = null, $table = null)
     {
         $data = [
             'reference_id' => $entity->id,
@@ -76,15 +85,24 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 
     /**
      * Clean a term relationship
-     * @param $entity, $title, $type
+     * @param Entity $entity, string $title, string $type
      */
-    public function cleanRelationship($entity, $title, $type)
+    public function cleanRelationship(Entity $entity, $title = null, $type = null)
     {
-        $termToClean = $this->findFirstByRefIDTitleType($entity->id, $title, $type);
+        $termToClean = $this->findFirstByReferenceIDAndTitleAndType($entity->id, $title, $type);
         $query = $this->query();
         $query->delete()
             ->where(['id' => $termToClean->id])
             ->execute();
+    }
+
+    public function beforeSave(Event $event, Entity $entity)
+    {
+        $termRelationshipSaved = $this->findFirstByReferenceIDAndTermID($entity->reference_id, $entity->reference_id);
+        if (!empty($termRelationshipSaved))
+        {
+            return false;
+        }
     }
 
 }
