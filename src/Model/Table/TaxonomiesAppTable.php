@@ -1,5 +1,4 @@
-<?php
-namespace Taxonomy\Model\Table;
+<?php namespace Taxonomy\Model\Table;
 
 use Cake\ORM\Table;
 
