@@ -16,8 +16,9 @@ class TaxonomyHelper extends AppHelper {
 	{
 		if (is_array($options['value']))
 		{
-		$options['value'] = implode(';', Hash::extract($options['value'], '{n}.title'));
+			$options['value'] = implode(';', Hash::extract($options['value'], '{n}.title'));
 		}
+
 		return $this->Form->input('Taxonomy.'.$type, $options);
 	}
 }

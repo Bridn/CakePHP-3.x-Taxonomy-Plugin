@@ -5,6 +5,7 @@ use Cake\ORM\Query;
 use Taxonomy\Model\Table\TaxonomiesAppTable;
 use Cake\ORM\Entity;
 use Cake\Event\Event;
+use Cake\Utility\Hash;
 
 class TermsTable extends TaxonomiesAppTable {
 
@@ -27,7 +28,7 @@ class TermsTable extends TaxonomiesAppTable {
      * @param $term
      * @return void
      */
-    public function findFirstByTitle($title)
+    public function findFirstByTitle($title = null)
     {
         return $this->find()->where(['title' => $title])->first();
     }
@@ -54,7 +55,6 @@ class TermsTable extends TaxonomiesAppTable {
         } else {
             $term = $this->newEntity($data);
         }
-
         //SAVE
        	$this->save($term);
         return $term->id;
@@ -68,16 +68,28 @@ class TermsTable extends TaxonomiesAppTable {
     {
         if (!is_null($entity->Taxonomy))
         {
+            $termsInDB = $this->termsrelationships->findAllByReferenceID($entity->id);
+
         	foreach($entity->Taxonomy as $type => $terms)
         	{
-        		$terms = $this->_inputExplode($terms);
-        		foreach($terms as $title)
+                // Implode input data to array
+                $terms = $this->_inputExplode($terms);
+                // Clean relationships
+                foreach ($termsInDB as $key => $value) {
+                    $check = array_search($value->term->title, $terms);
+                    if($check === false)
+                    {
+                       $this->termsrelationships->cleanRelationship($entity, $value->term->title, $type);
+                    }
+                }
+                // Add Term And Relationship
+        		foreach ($terms as $title)
         		{
         			if ($this->_notEmptyTerm($title))
         			{
     		    		$data = array('type' => $type, 'title' => $title);
     		    		$termID = $this->addTerm($data);
-                        if($termID)
+                        if ($termID)
                         {
     		    		    $this->termsrelationships->addRelationship($entity, $termID, $table);
                         }
@@ -121,8 +133,17 @@ class TermsTable extends TaxonomiesAppTable {
      * @param Event $event, Entity $entity
      * @return void
      */
-    public function beforeSave(Event $event, Entity $entity)
+    public function afterSave(Event $event, Entity $entity)
     {
+        // Clean DB from unused terms. (by counter cache value)
+        $termsNotUsed = $this->find()->where(['term_count =' => 0])->all();
+        foreach($termsNotUsed as $term)
+        {
+            $query = $this->query();
+            $query->delete()
+                ->where(['id' => $term->id])
+                ->execute();
+        }
     }
 
 }
