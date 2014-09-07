@@ -45,8 +45,7 @@ class TaxonomyBehavior extends Behavior {
 
     /**
      * BeforeFind Callback
-     * Add Terms to the model queries
-     * Return Term properties parameters as null if title is null
+     * Add Terms to the associated model object
      * @param Event $event, $query, array $options
      */
     public function beforeFind(Event $event, $query, $options = [])
@@ -87,7 +86,7 @@ class TaxonomyBehavior extends Behavior {
 
     /**
      * AfterSave Callback
-     * Add Terms to the model
+     * Add and Sync Terms to the model
      * @param Event $event, Entity $entity
      */
     public function afterSave(Event $event, Entity $entity)
