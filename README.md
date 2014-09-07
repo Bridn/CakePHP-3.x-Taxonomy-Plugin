@@ -32,3 +32,7 @@ The array path is like **$myContent['terms_format']['tag']** or **$myContent['te
 the first parameter 'tag' will be used to group your terms. An example of form :
 
 	<?= $this->Taxonomy->input('tag', ['rows' => '2', 'value' => $article['terms_format']['tag']]) ?>
+
+### 5 - Use it !
+
+Separate your words with ";"
