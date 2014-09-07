@@ -98,7 +98,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 
     public function beforeSave(Event $event, Entity $entity)
     {
-        $termRelationshipSaved = $this->findFirstByReferenceIDAndTermID($entity->reference_id, $entity->reference_id);
+        $termRelationshipSaved = $this->findFirstByReferenceIDAndTermID($entity->reference_id, $entity->term_id);
         if (!empty($termRelationshipSaved))
         {
             return false;

@@ -96,14 +96,14 @@ class TermsTable extends TaxonomiesAppTable {
                 $termsRelationshipToSave = array_diff($termsInput, $termSavedArray);
                 $termsRelationshipToDelete = array_diff($termSavedArray, $termsInput);
 
-                if(!empty($termsRelationshipToDelete))
+                if (!empty($termsRelationshipToDelete))
                 {
                     foreach($termsRelationshipToDelete as $term)
                     {
                         $this->termsrelationships->cleanRelationship($entity, $term, $type);
                     }
                 }
-                if(!empty($termsRelationshipToSave))
+                if (!empty($termsRelationshipToSave))
                 {
                     foreach($termsRelationshipToSave as $term)
                     {
