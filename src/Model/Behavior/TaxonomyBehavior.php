@@ -7,7 +7,6 @@ use Cake\ORM\TableRegistry;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\Event\Event;
-use Cake\Utility\Hash;
 
 class TaxonomyBehavior extends Behavior {
 
@@ -65,17 +64,20 @@ class TaxonomyBehavior extends Behavior {
         /**
          * Add an array of terms(id,title,...) to result.
          */
-        $query->formatResults(function($results, $query) {
-            return $results->map(function($row) {
+        $query->formatResults(function($results, $query)
+        {
+            return $results->map(function($row)
+            {
                 if (!empty($row['terms_relationships']))
                 {
-                    $terms = array();
-                    foreach($row['terms_relationships'] as $k => $v) {
-                        $terms[$v['term']['type']][$k] = array(
+                    $terms = [];
+                    foreach($row['terms_relationships'] as $k => $v)
+                    {
+                        $terms[$v['term']['type']][$k] = [
                             'title' => $v['term']['title'],
                             'id' => $v['term']['id'],
                             'reference_id' => $v['reference_id'],
-                            );
+                            ];
                     }
                     $row['terms_format'] = $terms;
                 }

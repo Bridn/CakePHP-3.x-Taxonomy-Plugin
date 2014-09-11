@@ -12,7 +12,7 @@ class TaxonomyHelper extends AppHelper {
      * @param $type [e.g. Tag, Category...], array $options []
      * @return Form
      */
-	public function input($type, $options = [])
+	public function input($type, array $options = [])
 	{
 		if (is_array($options['value']))
 		{

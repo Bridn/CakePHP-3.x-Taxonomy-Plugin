@@ -1,11 +1,10 @@
 <?php namespace Taxonomy\Model\Table;
 
+use Taxonomy\Model\Table\TaxonomiesAppTable;
 use Cake\ORM\Table;
 use Cake\ORM\Query;
-use Taxonomy\Model\Table\TaxonomiesAppTable;
 use Cake\ORM\Entity;
 use Cake\Event\Event;
-use Cake\Utility\Hash;
 
 class TermsTable extends TaxonomiesAppTable {
 
@@ -13,7 +12,7 @@ class TermsTable extends TaxonomiesAppTable {
      * Initialize
      * @param $config
      */
-	public function initialize(array $config)
+	public function initialize(array $config = [])
 	{
         $this->hasMany('Taxonomy.TermsRelationships', [
         	'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
@@ -38,35 +37,40 @@ class TermsTable extends TaxonomiesAppTable {
      * Add a single Term without relationships
      * @param array $data
      */
-    public function addTerm(array $data)
+    public function addTerm(array $data = [])
     {
         //CREATE
-        if(!empty($data['title']) && !empty($data['type']))
+        if (!empty($data['title']) && !empty($data['type']))
         {
             // Check if exists in DB
             $term = $this->findFirstByTitleAndType($data['title'], $data['type']);
-            if(empty($term))
+            if (empty($term))
             {
                 $term = $this->newEntity($data);
-           	    $this->save($term);
+                if (!$this->save($term))
+                {
+                    return false;
+                }
             }
             return $term->id;
         }
-        return false;
     }
 
     /**
      * Update a single Term without relationships
      * @param array $data, $string id
      */
-    public function updateTerm(array $data, $id = null)
+    public function updateTerm(array $data = [], $id = null)
     {
         //UPDATE
-        if(!is_null($id))
+        if (!is_null($id))
         {
             $term = $this->get($id);
             $term = $this->patchEntity($term, $data);
-            $this->save($term);
+            if ($this->save($term))
+            {
+                return true;
+            }
         }
         return false;
     }
@@ -77,7 +81,7 @@ class TermsTable extends TaxonomiesAppTable {
      */
     public function addAndSync(Entity $entity, $table = null)
     {
-        if (!is_null($entity->Taxonomy))
+        if (!is_null($entity->Taxonomy) && !empty($table))
         {
         	foreach($entity->Taxonomy as $type => $terms)
         	{
@@ -88,34 +92,57 @@ class TermsTable extends TaxonomiesAppTable {
                 $termsSaved = $this->termsrelationships->findAllByReferenceIDAndType($entity->id, $type);
 
                 // Saved Terms Object To Array
-                $termSavedArray = array();
-                foreach ($termsSaved as $key => $termSaved) {
+                $termSavedArray = [];
+                foreach ($termsSaved as $termSaved) {
                     $termSavedArray[] = $termSaved->term->title;
                 }
 
+                // Compare and Sync
                 $termsRelationshipToSave = array_diff($termsInput, $termSavedArray);
                 $termsRelationshipToDelete = array_diff($termSavedArray, $termsInput);
 
-                if (!empty($termsRelationshipToDelete))
-                {
-                    foreach($termsRelationshipToDelete as $term)
-                    {
-                        $this->termsrelationships->cleanRelationship($entity, $term, $type);
-                    }
-                }
-                if (!empty($termsRelationshipToSave))
-                {
-                    foreach($termsRelationshipToSave as $term)
-                    {
-                        $data = array('type' => $type, 'title' => $term);
-                        $termID = $this->addTerm($data);
-                        if($termID)
-                        {
-                            $this->termsrelationships->addRelationship($entity, $termID, $table);
-                        }
-                    }
-                }
+                $this->toAdd($termsRelationshipToSave, $entity, $type, $table);
+                $this->toClean($termsRelationshipToDelete, $entity, $type);
         	}
+        }
+    }
+
+    /**
+     * Loop through terms and add relationships
+     * @param array $termsRelationshipToSave, Entity $entity, string $type, string $table
+     */
+    private function toAdd(array $termsRelationshipToSave = [], Entity $entity, $type = null, $table = null)
+    {
+        if (!empty($termsRelationshipToSave) && is_array($termsRelationshipToSave))
+        {
+            foreach($termsRelationshipToSave as $term)
+            {
+                $data = [
+                    'type' => $type,
+                    'title' => $term
+                ];
+                // Add and get the id of created/updated term
+                $termID = $this->addTerm($data);
+                if($termID)
+                {
+                    $this->termsrelationships->addRelationship($entity, $termID, $table);
+                }
+            }
+        }
+    }
+
+    /**
+     * Loop through terms and clean relationships
+     * @param array $termsRelationshipToDelete, Entity $entity, string $type
+     */
+    private function toClean(array $termsRelationshipToDelete = [], Entity $entity, $type = null)
+    {
+        if (!empty($termsRelationshipToDelete) && is_array($termsRelationshipToDelete))
+        {
+            foreach($termsRelationshipToDelete as $title)
+            {
+                $this->termsrelationships->cleanRelationship($entity, $title, $type);
+            }
         }
     }
 
@@ -124,7 +151,7 @@ class TermsTable extends TaxonomiesAppTable {
      * @param string $terms
      * @return $terms [array]
      */
-    private function _makeArray($terms = null)
+    protected function _makeArray($terms = null)
     {
 		if (is_string($terms))
 		{

@@ -1,11 +1,10 @@
 <?php namespace Taxonomy\Model\Table;
 
+use Taxonomy\Model\Table\TaxonomiesAppTable;
 use Cake\ORM\Table;
 use Cake\ORM\Query;
 use Cake\ORM\Entity;
 use Cake\Event\Event;
-use Taxonomy\Model\Table\TaxonomiesAppTable;
-
 
 class TermsRelationshipsTable extends TaxonomiesAppTable {
 
@@ -13,7 +12,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
      * Initialize
      * @param $config
      */
-	public function initialize(array $config)
+	public function initialize(array $config = [])
 	{
         $this->belongsTo('Taxonomy.Terms', [
         	'className' => 'Taxonomy\Model\Table\TermsTable',
