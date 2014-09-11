@@ -62,7 +62,7 @@ class TaxonomyBehavior extends Behavior {
         ]);
 
         /**
-         * Add an array of terms(id,title,...) to result.
+         * Add an array of terms(id,title,...) to query result.
          */
         $query->formatResults(function($results, $query)
         {
