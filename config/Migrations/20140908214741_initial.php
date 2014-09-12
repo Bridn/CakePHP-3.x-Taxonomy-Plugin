@@ -19,7 +19,7 @@ class Initial extends AbstractMigration
      */
     public function up()
     {
-        $terms = $this->table('terms');
+        $terms = $this->table('terms', array('id' => false, 'primary_key' => array('id')));
         $terms->addColumn('id', 'char', array('limit' => 36))
               ->addColumn('title', 'string', array('limit' => 100))
               ->addColumn('type', 'string', array('limit' => 50))
@@ -30,7 +30,7 @@ class Initial extends AbstractMigration
               ->addIndex(array('title', 'slug'), array('unique' => true))
               ->save();
 
-        $termsRelationships = $this->table('terms_relationships');
+        $termsRelationships = $this->table('terms_relationships', array('id' => false, 'primary_key' => array('id')));
         $termsRelationships->addColumn('id', 'char', array('limit' => 36))
               ->addColumn('reference_id', 'char', array('limit' => 36))
               ->addColumn('reference_model', 'string', array('limit' => 50))
