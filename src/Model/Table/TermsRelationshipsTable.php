@@ -90,12 +90,9 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	 */
 	public function cleanRelationship(Entity $entity, $title = null, $type = null)
 	{
-		$termToClean = $this->findFirstByReferenceIDAndTitleAndType($entity->id, $title, $type);
-		$query = $this->query();
+		$termRelationshipToClean = $this->findFirstByReferenceIDAndTitleAndType($entity->id, $title, $type);
 
-		return $query->delete()
-			->where(['id' => $termToClean->id])
-			->execute();
+    	return $this->delete($termRelationshipToClean);
 	}
 
 	public function beforeSave(Event $event, Entity $entity)

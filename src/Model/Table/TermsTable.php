@@ -199,6 +199,7 @@ class TermsTable extends TaxonomiesAppTable {
 	{
 		// Clean DB from unused terms. (by counter cache value)
 		$termsNotUsed = $this->find()->where(['term_count =' => 0])->all();
+
 		foreach($termsNotUsed as $term)
 		{
 			$query = $this->query();

@@ -14,6 +14,7 @@ class Term extends Entity {
 	{
 		$this->set('slug', Inflector::slug($title));
 		$title = trim($title);
+
 		return $title;
 	}
 }
