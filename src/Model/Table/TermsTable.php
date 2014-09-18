@@ -40,7 +40,7 @@ class TermsTable extends TaxonomiesAppTable {
 	public function addTerm(array $data = [])
 	{
 		//CREATE
-		if ( ! empty($data['title']) && !empty($data['type']))
+		if ( ! empty($data['title']) && ! empty($data['type']))
 		{
 			// Check if exists in DB
 			$term = $this->findFirstByTitleAndType($data['title'], $data['type']);
@@ -85,7 +85,7 @@ class TermsTable extends TaxonomiesAppTable {
 	 */
 	public function addAndSync(Entity $entity, $table = null)
 	{
-		if ( ! is_null($entity->Taxonomy) && !empty($table))
+		if ( ! is_null($entity->Taxonomy) && ! empty($table))
 		{
 			$sync = array();
 

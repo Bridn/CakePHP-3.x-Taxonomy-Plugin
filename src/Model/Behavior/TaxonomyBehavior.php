@@ -68,9 +68,11 @@ class TaxonomyBehavior extends Behavior {
 		{
 			return $results->map(function($row)
 			{
-				if (!empty($row['terms_relationships']))
+
+				if ( ! empty($row['terms_relationships']))
 				{
-					$terms = [];
+					$terms = array();
+
 					foreach($row['terms_relationships'] as $k => $v)
 					{
 						$terms[$v['term']['type']][$k] = [
@@ -79,8 +81,10 @@ class TaxonomyBehavior extends Behavior {
 							'reference_id' => $v['reference_id'],
 							];
 					}
+
 					$row['terms_format'] = $terms;
 				}
+
 				return $row;
 			});
 		});
