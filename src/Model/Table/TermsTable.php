@@ -43,9 +43,9 @@ class TermsTable extends TaxonomiesAppTable {
 		if ( ! empty($data['title']) && ! empty($data['type']))
 		{
 			// Check if exists in DB
-			$term = $this->findFirstByTitleAndType($data['title'], $data['type']);
+			$term = $termSaved = $this->findFirstByTitleAndType($data['title'], $data['type']);
 
-			if (empty($term))
+			if (empty($termSaved))
 			{
 				$term = $this->newEntity($data);
 				if ( ! $this->save($term))
