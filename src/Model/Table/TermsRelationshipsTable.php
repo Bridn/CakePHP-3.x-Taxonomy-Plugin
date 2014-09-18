@@ -69,6 +69,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	/**
 	 * Add a term relationship
 	 * @param Entity $entity, string $termID, string $table (alias)
+	 * @return string $relationship->id
 	 */
 	public function addRelationship(Entity $entity, $termID = null, $table = null)
 	{
@@ -79,6 +80,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 		];
 		$relationship = $this->newEntity($data);
 		$this->save($relationship);
+
 		return $relationship->id;
 	}
 
@@ -90,7 +92,8 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	{
 		$termToClean = $this->findFirstByReferenceIDAndTitleAndType($entity->id, $title, $type);
 		$query = $this->query();
-		$query->delete()
+
+		return $query->delete()
 			->where(['id' => $termToClean->id])
 			->execute();
 	}
@@ -98,7 +101,8 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	public function beforeSave(Event $event, Entity $entity)
 	{
 		$termRelationshipSaved = $this->findFirstByReferenceIDAndTermID($entity->reference_id, $entity->term_id);
-		if (!empty($termRelationshipSaved))
+
+		if ( ! empty($termRelationshipSaved))
 		{
 			return false;
 		}

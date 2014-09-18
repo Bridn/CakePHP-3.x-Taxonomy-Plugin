@@ -40,18 +40,20 @@ class TermsTable extends TaxonomiesAppTable {
 	public function addTerm(array $data = [])
 	{
 		//CREATE
-		if (!empty($data['title']) && !empty($data['type']))
+		if ( ! empty($data['title']) && !empty($data['type']))
 		{
 			// Check if exists in DB
 			$term = $this->findFirstByTitleAndType($data['title'], $data['type']);
+
 			if (empty($term))
 			{
 				$term = $this->newEntity($data);
-				if (!$this->save($term))
+				if ( ! $this->save($term))
 				{
 					return false;
 				}
 			}
+
 			return $term->id;
 		}
 	}
@@ -63,7 +65,7 @@ class TermsTable extends TaxonomiesAppTable {
 	public function updateTerm(array $data = [], $id = null)
 	{
 		//UPDATE
-		if (!is_null($id))
+		if ( ! is_null($id))
 		{
 			$term = $this->get($id);
 			$term = $this->patchEntity($term, $data);
@@ -72,93 +74,120 @@ class TermsTable extends TaxonomiesAppTable {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
 	/**
 	 * Add terms and sync relationships
 	 * @param $entity, $table
+	 * @return array $sync
 	 */
 	public function addAndSync(Entity $entity, $table = null)
 	{
-		if (!is_null($entity->Taxonomy) && !empty($table))
+		if ( ! is_null($entity->Taxonomy) && !empty($table))
 		{
+			$sync = array();
+
 			foreach($entity->Taxonomy as $type => $terms)
 			{
-				// Implode input data to array
-				$termsInput = $this->_makeArray($terms);
+				// Implode input data to array and delete duplicate values
+				$termsInput = array_unique($this->_makeArray($terms));
 
 				// Look for already saved relationships for this reference_id and this type of taxonomy
 				$termsSaved = $this->termsrelationships->findAllByReferenceIDAndType($entity->id, $type);
 
 				// Saved Terms Object To Array
 				$termSavedArray = [];
-				foreach ($termsSaved as $termSaved) {
+
+				foreach ($termsSaved as $termSaved)
+				{
 					$termSavedArray[] = $termSaved->term->title;
 				}
 
-				// Compare and Sync
+				// Compare
 				$termsRelationshipToSave = array_diff($termsInput, $termSavedArray);
 				$termsRelationshipToDelete = array_diff($termSavedArray, $termsInput);
 
-				$this->toAdd($termsRelationshipToSave, $entity, $type, $table);
-				$this->toClean($termsRelationshipToDelete, $entity, $type);
+				// Add and Clean
+				$added = $this->toAdd($termsRelationshipToSave, $entity, $type, $table);
+				$cleaned = $this->toClean($termsRelationshipToDelete, $entity, $type);
+
+				// Push result to array
+				$sync['added'] = $added;
+				$sync['cleaned'] = $cleaned;
 			}
+
+			return (array) $sync;
 		}
 	}
 
 	/**
 	 * Loop through terms and add relationships
 	 * @param array $termsRelationshipToSave, Entity $entity, string $type, string $table
+	 * @return array $added
 	 */
 	private function toAdd(array $termsRelationshipToSave = [], Entity $entity, $type = null, $table = null)
 	{
-		if (!empty($termsRelationshipToSave) && is_array($termsRelationshipToSave))
+		if ( ! empty($termsRelationshipToSave) && is_array($termsRelationshipToSave))
 		{
+
+			$added = array();
+
 			foreach($termsRelationshipToSave as $term)
 			{
 				$data = [
 					'type' => $type,
 					'title' => $term
 				];
+
 				// Add and get the id of created/updated term
 				$termID = $this->addTerm($data);
-				if($termID)
+				if ($termID)
 				{
-					$this->termsrelationships->addRelationship($entity, $termID, $table);
+					$added[] = $this->termsrelationships->addRelationship($entity, $termID, $table);
 				}
 			}
+
+			return (array) $added;
 		}
 	}
 
 	/**
 	 * Loop through terms and clean relationships
 	 * @param array $termsRelationshipToDelete, Entity $entity, string $type
+	 * @return array $cleaned
 	 */
 	private function toClean(array $termsRelationshipToDelete = [], Entity $entity, $type = null)
 	{
-		if (!empty($termsRelationshipToDelete) && is_array($termsRelationshipToDelete))
+		if ( ! empty($termsRelationshipToDelete) && is_array($termsRelationshipToDelete))
 		{
+
+			$cleaned = array();
+
 			foreach($termsRelationshipToDelete as $title)
 			{
-				$this->termsrelationships->cleanRelationship($entity, $title, $type);
+				$cleaned[] = $this->termsrelationships->cleanRelationship($entity, $title, $type);
 			}
+
+			return (array) $cleaned;
 		}
 	}
 
 	/**
-	 * Explode string by ';' to array
+	 * Explode string by ';' to array and trim all values
 	 * @param string $terms
-	 * @return $terms [array]
+	 * @return array $terms
 	 */
 	protected function _makeArray($terms = null)
 	{
 		if (is_string($terms))
 		{
 			$terms = explode(';', $terms);
-		} elseif (!is_array($terms)) {
+		} elseif ( ! is_array($terms)) {
 			$terms = array(null);
 		}
+
 		return array_map('trim', $terms);
 	}
 

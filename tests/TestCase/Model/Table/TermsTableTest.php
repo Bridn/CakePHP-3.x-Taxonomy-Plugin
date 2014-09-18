@@ -7,11 +7,12 @@ use Cake\ORM\Entity;
 use Cake\Event\Event;
 use Cake\TestSuite\TestCase;
 
-class TermsTableTest extends TestCase {
+use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 
-	public function setUp() {
-		parent::setUp();
-	}
+use Taxonomy\Model\Table\TermsTable as Term;
+
+class TermsTableTest extends TestCase {
 
 	/**
 	* Fixture
@@ -19,8 +20,50 @@ class TermsTableTest extends TestCase {
 	* @var array
 	*/
 	public $fixtures = [
-			'plugin.taxonomy.taxonomy_terms_relationship',
-			'plugin.taxonomy.taxonomy_term'
+		'plugin.taxonomy.taxonomy_term'
 	];
+
+	/**
+	 * setup
+	 *
+	 * @return void
+	 */
+	public function setUp()
+	{
+		parent::setUp();
+		$this->connection = ConnectionManager::get('test');
+		$this->term = TableRegistry::get('Taxonomy.Terms', [
+			'table' => 'taxonomy_terms',
+			'connection' => $this->connection
+		]);
+
+	}
+
+	/**
+	 * teardown
+	 *
+	 * @return void
+	 */
+	public function tearDown()
+	{
+		parent::tearDown();
+		unset($this->term);
+		TableRegistry::clear();
+	}
+
+	public function testAddTermExists()
+	{
+		$data = ['title' => 'cake', 'type' => 'tag'];
+		$result = $this->term->findFirstByTitleAndType($data['title'], $data['type']);
+		$expected =  array('Term' => array('id' => 1, 'title' => 'cake'));
+		$this->assertEquals($expected, $result);
+	}
+
+	public function testAddTermNotExists()
+	{
+		$data = ['title' => 'soupe', 'type' => 'recette'];
+		$result = $this->term->addTerm($data);
+		$this->assertTrue(is_int($result));
+	}
 
 }
