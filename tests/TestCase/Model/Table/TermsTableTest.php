@@ -10,18 +10,7 @@ use Cake\TestSuite\TestCase;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 
-use Taxonomy\Model\Table\TermsTable as Term;
-
 class TermsTableTest extends TestCase {
-
-	/**
-	* Fixture
-	*
-	* @var array
-	*/
-	public $fixtures = [
-		'plugin.taxonomy.taxonomy_term'
-	];
 
 	/**
 	 * setup
@@ -36,8 +25,15 @@ class TermsTableTest extends TestCase {
 			'table' => 'taxonomy_terms',
 			'connection' => $this->connection
 		]);
-
 	}
+
+	/**
+	* Fixture
+	*
+	* @var array
+	*/
+	public $fixtures = ['plugin.taxonomy.term'];
+	public $autoFixtures = false;
 
 	/**
 	 * teardown
@@ -53,10 +49,11 @@ class TermsTableTest extends TestCase {
 
 	public function testAddTermExists()
 	{
+		$this->loadFixtures('Term');
 		$data = ['title' => 'cake', 'type' => 'tag'];
 		$result = $this->term->findFirstByTitleAndType($data['title'], $data['type']);
-		$expected =  array('Term' => array('id' => 1, 'title' => 'cake'));
-		$this->assertEquals($expected, $result);
+		$expected = 'cake';
+		$this->assertEquals($expected, $result->title);
 	}
 
 	public function testAddTermNotExists()

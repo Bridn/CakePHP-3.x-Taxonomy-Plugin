@@ -59,7 +59,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Update a single Term without relationships
+	 * Update a single Term without relationships.
 	 * @param array $data, $string id
 	 */
 	public function updateTerm(array $data = [], $id = null)
@@ -79,7 +79,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Add terms and sync relationships
+	 * Add terms and sync relationships.
 	 * @param $entity, $table
 	 * @return array $sync
 	 */
@@ -175,7 +175,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Explode string by ';' to array and trim all values
+	 * Explode string by ';' to array and trim all values.
 	 * @param string $terms
 	 * @return array $terms
 	 */
@@ -192,7 +192,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * @param Event $event, Entity $entity
+	 * @param Event $event, Entity $entity.
 	 * @return void
 	 */
 	public function afterSave(Event $event, Entity $entity)

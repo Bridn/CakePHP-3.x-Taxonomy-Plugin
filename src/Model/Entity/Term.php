@@ -6,7 +6,7 @@ use Cake\Utility\Inflector;
 class Term extends Entity {
 
 	/**
-	 * Delete title white spaces, and create a slug from title
+	 * Delete title white spaces, and create a slug from title.
 	 * @param $title
 	 * @return $title
 	 */
