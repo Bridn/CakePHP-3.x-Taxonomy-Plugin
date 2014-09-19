@@ -1,11 +1,15 @@
-# CakePHP 3.x (beta 1) Taxonomy Plugin - BETA
+# CakePHP 3.x Taxonomy Plugin
 
 Simple Taxonomy Plugin.
-*version 0.1*
 
-### 1 - First import the SQL file : config/taxonomy_plugin.sql in your database.
+### 1 - First, use Migration plugin to create tables
 
-### 2 - Load the plugin (app/config/bootstrap.php)
+	cd to your app path
+	src/Console/cake migrations migrate -p Taxonomy
+
+More information about Migration at : http://github.com/cakephp/migrations
+
+### 2 - Load the Taxonomy plugin (app/config/bootstrap.php)
 
 	Plugin::load('Taxonomy', ['bootstrap' => false, 'routes' => true]);
 

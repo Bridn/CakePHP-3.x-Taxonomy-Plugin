@@ -23,7 +23,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Find first term by title and type
+	 * Find first term by title and type.
 	 * @param string $title, string $type
 	 */
 	public function findFirstByTitleAndType($title = null, $type = null)
@@ -34,7 +34,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Add a single Term without relationships
+	 * Add a single Term without relationships.
 	 * @param array $data
 	 */
 	public function addTerm(array $data = [])
@@ -91,13 +91,13 @@ class TermsTable extends TaxonomiesAppTable {
 
 			foreach($entity->Taxonomy as $type => $terms)
 			{
-				// Implode input data to array and delete duplicate values
+				// Implode input data to array and delete duplicate values.
 				$termsInput = array_unique($this->_makeArray($terms));
 
-				// Look for already saved relationships for this reference_id and this type of taxonomy
+				// Look for already saved relationships for this reference_id and this type of taxonomy.
 				$termsSaved = $this->termsrelationships->findAllByReferenceIDAndType($entity->id, $type);
 
-				// Saved Terms Object To Array
+				// Saved Terms Object To Array.
 				$termSavedArray = [];
 
 				foreach ($termsSaved as $termSaved)
@@ -123,7 +123,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Loop through terms and add relationships
+	 * Loop through terms and add relationships.
 	 * @param array $termsRelationshipToSave, Entity $entity, string $type, string $table
 	 * @return array $added
 	 */

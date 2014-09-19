@@ -25,7 +25,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Find first by reference_id and term_id
+	 * Find first by reference_id and term_id.
 	 * @param string $reference_id, string $term_id
 	 */
 	public function findFirstByReferenceIDAndTermID($reference_id = null, $term_id = null)
@@ -36,7 +36,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Find all terms by reference_id
+	 * Find all terms by reference_id.
 	 * @param string $id, string $type
 	 */
 	public function findAllByReferenceIDAndType($id = null, $type = null)
@@ -51,7 +51,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Find first termsRelationship by reference_id, title and type
+	 * Find first termsRelationship by reference_id, title and type.
 	 * @param string $reference_id, string $title, string $type
 	 */
 	public function findFirstByReferenceIDAndTitleAndType($reference_id = null, $title = null, $type = null)
@@ -67,7 +67,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Add a term relationship
+	 * Add a term relationship.
 	 * @param Entity $entity, string $termID, string $table (alias)
 	 * @return string $relationship->id
 	 */
@@ -85,7 +85,7 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Clean a term relationship
+	 * Clean a term relationship.
 	 * @param Entity $entity, string $title, string $type
 	 */
 	public function cleanRelationship(Entity $entity, $title = null, $type = null)
