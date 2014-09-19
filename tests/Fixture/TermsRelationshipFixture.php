@@ -3,7 +3,7 @@ namespace Taxonomy\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
-class TaxonomyTermsRelationshipFixture extends TestFixture {
+class TermsRelationshipFixture extends TestFixture {
 
 /**
  * fields property

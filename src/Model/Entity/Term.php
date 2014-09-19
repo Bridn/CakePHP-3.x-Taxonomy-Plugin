@@ -6,14 +6,15 @@ use Cake\Utility\Inflector;
 class Term extends Entity {
 
 	/**
-     * Delete title white spaces, and create a slug from title
-     * @param $title
-     * @return $title
-     */
+	 * Delete title white spaces, and create a slug from title.
+	 * @param $title
+	 * @return $title
+	 */
 	protected function _setTitle($title)
 	{
-        $this->set('slug', Inflector::slug($title));
-        $title = trim($title);
-        return $title;
-    }
+		$this->set('slug', Inflector::slug($title));
+		$title = trim($title);
+
+		return $title;
+	}
 }

@@ -1,0 +1,34 @@
+{
+	"name": "bridn/taxonomy",
+	"description": "Simple Taxonomy plugin for CakePHP 3.x",
+	"type": "cakephp-plugin",
+	"keywords": ["cakephp", "taxonomy"],
+	"homepage": "https://github.com/Bridn/CakePHP-3.x-Taxonomy-Plugin",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Antoine Bridenne",
+			"homepage": "https://github.com/Bridn"
+		}
+	],
+	"extra": {
+        	"installer-name": "Taxonomy"
+    	},
+	"require": {
+		"php": ">=5.4.19",
+		"cakephp/cakephp": "3.0.x-dev"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Taxonomy\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Taxonomy\\Test\\": "tests"
+		}
+	}
+}
