@@ -26,10 +26,10 @@ More information about Migration at : http://github.com/cakephp/migrations
         $this->addBehavior('Taxonomy.TaxonomyFinder');
     }
 
-    TaxonomySync Behavior create/update/clean your terms.
-    TaxonomyFinder Behavior manage all kind of queries. If you don't want to overload your queries, dettach it on the fly.
+- TaxonomySync Behavior create/update/clean your terms.
+- TaxonomyFinder Behavior manage all kind of queries. If you don't want to overload your queries, dettach it on the fly.
 
-    The Taxonomy plugin use polymorph associations, so it is automatically associated to your model.
+The Taxonomy plugin use polymorph associations, it is automatically associated to your model.
 
 ### 4 - Use the TaxonomyHelper to add tags to your content.
 
@@ -43,6 +43,21 @@ The first parameter 'tag' will be used to group your terms in DB (don't translat
 	<?= $this->Taxonomy->input('tag', $article, ['label' => __d('Taxonomy', 'Mots clés')]) ?>
 	<?= $this->Taxonomy->input('category', $article, ['label' => __d('Taxonomy', 'Categorie')]) ?>
 
-### 5 - Use it !
+### 5 - Queries in controller
+
+To return all terms by table and type (articles controller) :
+
+	$articles = $this->{$this->name}->find('all');
+	$categories = $this->{$this->name}->listAllTermsByType('category');
+    $this->set(compact('articles', 'categories'));
+
+Or
+
+To return all relationships for a given term id :
+
+	$categories = $this->{$this->name}->listAllByTableAndByTerm($id);
+	$this->set(compact('categories'));
+
+### 6 - Note
 
 Separate your words with ";"
