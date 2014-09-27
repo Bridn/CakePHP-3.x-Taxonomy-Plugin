@@ -25,7 +25,7 @@ class Initial extends AbstractMigration
               ->addColumn('term_count', 'integer', array('limit' => 11, 'null' => true, 'default' => null))
               ->addColumn('created', 'datetime', array('null' => true, 'default' => null))
               ->addColumn('modified', 'datetime', array('null' => true, 'default' => null))
-              ->addIndex(array('title', 'slug'), array('unique' => true))
+              ->addIndex(array('title', 'slug'), array('unique' => false))
               ->save();
 
         $termsRelationships = $this->table('terms_relationships', array('id' => false, 'primary_key' => array('id')));

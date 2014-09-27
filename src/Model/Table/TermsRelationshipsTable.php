@@ -92,7 +92,8 @@ class TermsRelationshipsTable extends TaxonomiesAppTable {
 	{
 		$termRelationshipToClean = $this->findFirstByReferenceIDAndTitleAndType($entity->id, $title, $type);
 
-		// CounterCache decrements to 0 only with an Entity as param, not ID ($termRelationshipToClean->id wont work)
+		// CounterCache decrements to 0 only with an Entity as param,
+		// not ID ($termRelationshipToClean->id wont work)
     	return $this->delete($termRelationshipToClean);
 	}
 

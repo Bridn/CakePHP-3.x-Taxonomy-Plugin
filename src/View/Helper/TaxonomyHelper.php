@@ -9,14 +9,19 @@ class TaxonomyHelper extends AppHelper {
 
 	/**
      * Create taxonomy Input
-     * @param $type [e.g. Tag, Category...], array $options []
+     * @param $type [e.g. Tag, Category...], $data (entity), array $options []
      * @return Form
      */
-	public function input($type, array $options = [])
+	public function input($type = null, $data = null,  array $options = [])
 	{
-		if (is_array($options['value']))
+		if (isset($data['terms_format'][$type]) && ! is_null($data['terms_format'][$type]))
 		{
-			$options['value'] = implode(';', Hash::extract($options['value'], '{n}.title'));
+			if(is_array($data['terms_format'][$type]))
+			{
+				$options['value'] = implode(';', Hash::extract($data['terms_format'][$type], '{n}.title'));
+			} else {
+				$options['value'] = $data['terms_format'][$type];
+			}
 		}
 
 		return $this->Form->input('Taxonomy.'.$type, $options);

@@ -13,6 +13,13 @@ use Cake\ORM\TableRegistry;
 class TermsTableTest extends TestCase {
 
 	/**
+	* Fixture
+	*
+	* @var array
+	*/
+	public $fixtures = ['plugin.taxonomy.terms'];
+
+	/**
 	 * setup
 	 *
 	 * @return void
@@ -28,14 +35,6 @@ class TermsTableTest extends TestCase {
 	}
 
 	/**
-	* Fixture
-	*
-	* @var array
-	*/
-	public $fixtures = ['plugin.taxonomy.term'];
-	public $autoFixtures = false;
-
-	/**
 	 * teardown
 	 *
 	 * @return void
@@ -49,7 +48,6 @@ class TermsTableTest extends TestCase {
 
 	public function testAddTermExists()
 	{
-		$this->loadFixtures('Term');
 		$data = ['title' => 'cake', 'type' => 'tag'];
 		$result = $this->term->findFirstByTitleAndType($data['title'], $data['type']);
 		$expected = 'cake';

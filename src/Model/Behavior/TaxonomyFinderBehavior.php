@@ -7,8 +7,9 @@ use Cake\ORM\TableRegistry;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\Event\Event;
+use Taxonomy\Model\Behavior\TaxonomyAbstractBehavior;
 
-class TaxonomyBehavior extends Behavior {
+class TaxonomyFinderBehavior extends TaxonomyAbstractBehavior {
 
 	/**
 	 * Construct
@@ -21,25 +22,6 @@ class TaxonomyBehavior extends Behavior {
 			'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable'
 		]);
 		$this->_processAssociations();
-	}
-
-	/**
-	 * Process Associations
-	 */
-	protected function _processAssociations()
-	{
-		$this->_table->hasMany('TermsRelationships', [
-			'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
-			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
-			'dependent' => true
-		]);
-
-		$this->termsRelationship->belongsTo($this->_table->alias(), [
-			'className' => $this->_table->alias(),
-			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
-		]);
 	}
 
 	/**
@@ -88,16 +70,6 @@ class TaxonomyBehavior extends Behavior {
 				return $row;
 			});
 		});
-	}
-
-	/**
-	 * AfterSave Callback
-	 * Add and Sync Terms to the model
-	 * @param Event $event, Entity $entity
-	 */
-	public function afterSave(Event $event, Entity $entity)
-	{
-		$this->termsRelationship->terms->addAndSync($entity, $this->_table->alias());
 	}
 
 }
