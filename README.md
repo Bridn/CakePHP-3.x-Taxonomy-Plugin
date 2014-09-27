@@ -7,12 +7,12 @@ Simple Taxonomy Plugin, you will be able to add tags or categories etc. to your 
 - CakePHP 3.x
 - CakePHP Migrations Plugin (Phinx >= v0.3.8)
 
-### 1 - First, use Migration plugin to create tables
+### 1 - First, use Migrations plugin to create tables
 
 	cd to your app path
 	src/Console/cake migrations migrate -p Taxonomy
 
-More information about Migration at : http://github.com/cakephp/migrations
+More information about Migrations at : http://github.com/cakephp/migrations
 
 ### 2 - Load the Taxonomy plugin (app/config/bootstrap.php)
 
@@ -53,7 +53,7 @@ To return all terms by table and type (articles controller) :
 
 Or
 
-To return all relationships for a given term id :
+To return all relationships used by a table for a given term id (articles controller):
 
 	$categories = $this->{$this->name}->listAllByTableAndByTerm($id);
 	$this->set(compact('categories'));
