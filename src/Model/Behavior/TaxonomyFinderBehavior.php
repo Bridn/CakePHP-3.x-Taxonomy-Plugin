@@ -72,4 +72,45 @@ class TaxonomyFinderBehavior extends TaxonomyAbstractBehavior {
 		});
 	}
 
+	/**
+	 * listAllTermsByType
+	 * List all terms by type (e.g. category) for a table
+	 * @param  null $type
+	 */
+	public function listAllTermsByType($type = null)
+	{
+		return $this->termsRelationship->find()->where(['reference_table' => $this->_table->alias(), 'Terms.type =' => $type])
+		->contain([
+			'Terms' => [
+				'foreignKey' => 'term_id'
+			]
+		])
+		->group('Terms.title')
+		->all();
+	}
+
+	/**
+	 * listAllByTableAndByTerm for a table
+	 * List all terms by table and term id
+	 * @param  null $id
+	 */
+	public function listAllByTableAndByTerm($id = null)
+	{
+		return $this->_table->find()
+			->where(['tr.reference_table' => $this->_table->alias(), 't.id =' => $id])
+		    ->join([
+		        'tr' => [
+		            'table' => 'terms_relationships',
+		            'type' => 'INNER',
+		            'conditions' => 'tr.reference_id = '. $this->_table->alias().'.id',
+		        ],
+		        't' => [
+		            'table' => 'terms',
+		            'type' => 'INNER',
+		            'conditions' => 'tr.term_id = t.id',
+		        ]
+		    ])
+		    ->all();
+	}
+
 }

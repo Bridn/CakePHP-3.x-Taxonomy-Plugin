@@ -14,6 +14,7 @@ class TaxonomyHelper extends AppHelper {
      */
 	public function input($type = null, $data = null,  array $options = [])
 	{
+
 		if (isset($data['terms_format'][$type]) && ! is_null($data['terms_format'][$type]))
 		{
 			if(is_array($data['terms_format'][$type]))
@@ -26,4 +27,5 @@ class TaxonomyHelper extends AppHelper {
 
 		return $this->Form->input('Taxonomy.'.$type, $options);
 	}
+
 }

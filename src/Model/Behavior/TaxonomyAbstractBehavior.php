@@ -13,14 +13,14 @@ abstract class TaxonomyAbstractBehavior extends Behavior {
 		$this->_table->hasMany('TermsRelationships', [
 			'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
 			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
+			'conditions' => 'TermsRelationships.reference_table = "'.$this->_table->alias().'"',
 			'dependent' => true
 		]);
 
 		$this->termsRelationship->belongsTo($this->_table->alias(), [
 			'className' => $this->_table->alias(),
 			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
+			'conditions' => 'TermsRelationships.reference_table = "'.$this->_table->alias().'"',
 		]);
 	}
 

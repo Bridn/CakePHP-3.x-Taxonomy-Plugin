@@ -1,6 +1,6 @@
 # CakePHP 3.x Taxonomy Plugin
 
-Simple Taxonomy Plugin, you will be able to add tags or categories to your entity.
+Simple Taxonomy Plugin, you will be able to add tags or categories etc. to your entity.
 
 ### Requirements
 

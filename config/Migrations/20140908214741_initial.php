@@ -31,7 +31,7 @@ class Initial extends AbstractMigration
         $termsRelationships = $this->table('terms_relationships', array('id' => false, 'primary_key' => array('id')));
         $termsRelationships->addColumn('id', 'char', array('limit' => 36))
               ->addColumn('reference_id', 'char', array('limit' => 36))
-              ->addColumn('reference_model', 'string', array('limit' => 50, 'null' => true, 'default' => null))
+              ->addColumn('reference_table', 'string', array('limit' => 50, 'null' => true, 'default' => null))
               ->addColumn('term_id', 'char', array('limit' => 36))
               ->addColumn('created', 'datetime', array('null' => true, 'default' => null))
               ->addColumn('modified', 'datetime', array('null' => true, 'default' => null))

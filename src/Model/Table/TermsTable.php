@@ -208,4 +208,5 @@ class TermsTable extends TaxonomiesAppTable {
 				->execute();
 		}
 	}
+
 }
