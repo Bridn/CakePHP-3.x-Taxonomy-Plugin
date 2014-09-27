@@ -17,12 +17,14 @@ class TaxonomyHelper extends AppHelper {
 
 		if (isset($data['terms_format'][$type]) && ! is_null($data['terms_format'][$type]))
 		{
+
 			if(is_array($data['terms_format'][$type]))
 			{
 				$options['value'] = implode(';', Hash::extract($data['terms_format'][$type], '{n}.title'));
 			} else {
 				$options['value'] = $data['terms_format'][$type];
 			}
+
 		}
 
 		return $this->Form->input('Taxonomy.'.$type, $options);

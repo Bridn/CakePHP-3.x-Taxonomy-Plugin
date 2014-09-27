@@ -85,6 +85,7 @@ class TermsTable extends TaxonomiesAppTable {
 	 */
 	public function addAndSync(Entity $entity, $table = null)
 	{
+
 		if ( ! is_null($entity->Taxonomy) && ! empty($table))
 		{
 			$sync = array();

@@ -75,7 +75,7 @@ class TaxonomyFinderBehavior extends TaxonomyAbstractBehavior {
 	/**
 	 * listAllTermsByType
 	 * List all terms by type (e.g. category) for a table
-	 * @param  null $type
+	 * @param $type null
 	 */
 	public function listAllTermsByType($type = null)
 	{
@@ -91,23 +91,23 @@ class TaxonomyFinderBehavior extends TaxonomyAbstractBehavior {
 
 	/**
 	 * listAllByTableAndByTerm for a table
-	 * List all terms by table and term id
-	 * @param  null $id
+	 * List all relationships for a table by term id
+	 * @param $id null
 	 */
 	public function listAllByTableAndByTerm($id = null)
 	{
 		return $this->_table->find()
-			->where(['tr.reference_table' => $this->_table->alias(), 't.id =' => $id])
+			->where(['terms_relationships.reference_table' => $this->_table->alias(), 'terms.id =' => $id])
 		    ->join([
-		        'tr' => [
+		        'terms_relationships' => [
 		            'table' => 'terms_relationships',
 		            'type' => 'INNER',
-		            'conditions' => 'tr.reference_id = '. $this->_table->alias().'.id',
+		            'conditions' => 'terms_relationships.reference_id = '. $this->_table->alias().'.id',
 		        ],
-		        't' => [
+		        'terms' => [
 		            'table' => 'terms',
 		            'type' => 'INNER',
-		            'conditions' => 'tr.term_id = t.id',
+		            'conditions' => 'terms_relationships.term_id = terms.id',
 		        ]
 		    ])
 		    ->all();
