@@ -17,4 +17,5 @@ class Term extends Entity {
 
 		return $title;
 	}
+
 }

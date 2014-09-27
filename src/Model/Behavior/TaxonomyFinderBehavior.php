@@ -7,8 +7,9 @@ use Cake\ORM\TableRegistry;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\Event\Event;
+use Taxonomy\Model\Behavior\TaxonomyAbstractBehavior;
 
-class TaxonomyBehavior extends Behavior {
+class TaxonomyFinderBehavior extends TaxonomyAbstractBehavior {
 
 	/**
 	 * Construct
@@ -21,25 +22,6 @@ class TaxonomyBehavior extends Behavior {
 			'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable'
 		]);
 		$this->_processAssociations();
-	}
-
-	/**
-	 * Process Associations
-	 */
-	protected function _processAssociations()
-	{
-		$this->_table->hasMany('TermsRelationships', [
-			'className' => 'Taxonomy\Model\Table\TermsRelationshipsTable',
-			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
-			'dependent' => true
-		]);
-
-		$this->termsRelationship->belongsTo($this->_table->alias(), [
-			'className' => $this->_table->alias(),
-			'foreignKey' => 'reference_id',
-			'conditions' => 'TermsRelationships.reference_model = "'.$this->_table->alias().'"',
-		]);
 	}
 
 	/**
@@ -91,13 +73,44 @@ class TaxonomyBehavior extends Behavior {
 	}
 
 	/**
-	 * AfterSave Callback
-	 * Add and Sync Terms to the model
-	 * @param Event $event, Entity $entity
+	 * listAllTermsByType
+	 * List all terms by type (e.g. category) for a table
+	 * @param $type null
 	 */
-	public function afterSave(Event $event, Entity $entity)
+	public function listAllTermsByType($type = null)
 	{
-		$this->termsRelationship->terms->addAndSync($entity, $this->_table->alias());
+		return $this->termsRelationship->find()->where(['reference_table' => $this->_table->alias(), 'Terms.type =' => $type])
+		->contain([
+			'Terms' => [
+				'foreignKey' => 'term_id'
+			]
+		])
+		->group('Terms.title')
+		->all();
+	}
+
+	/**
+	 * listAllByTableAndByTerm for a table
+	 * List all relationships for a table by term id
+	 * @param $id null
+	 */
+	public function listAllByTableAndByTerm($id = null)
+	{
+		return $this->_table->find()
+			->where(['terms_relationships.reference_table' => $this->_table->alias(), 'terms.id =' => $id])
+		    ->join([
+		        'terms_relationships' => [
+		            'table' => 'terms_relationships',
+		            'type' => 'INNER',
+		            'conditions' => 'terms_relationships.reference_id = '. $this->_table->alias().'.id',
+		        ],
+		        'terms' => [
+		            'table' => 'terms',
+		            'type' => 'INNER',
+		            'conditions' => 'terms_relationships.term_id = terms.id',
+		        ]
+		    ])
+		    ->all();
 	}
 
 }

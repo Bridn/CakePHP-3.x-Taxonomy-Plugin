@@ -1,6 +1,11 @@
 # CakePHP 3.x Taxonomy Plugin
 
-Simple Taxonomy Plugin.
+Simple Taxonomy Plugin, you will be able to add tags or categories etc. to your entity.
+
+### Requirements
+
+- CakePHP 3.x
+- CakePHP Migrations Plugin (Phinx >= v0.3.8)
 
 ### 1 - First, use Migration plugin to create tables
 
@@ -13,14 +18,18 @@ More information about Migration at : http://github.com/cakephp/migrations
 
 	Plugin::load('Taxonomy', ['bootstrap' => false, 'routes' => true]);
 
-### 3 - Add the behavior to your Table model :
+### 3 - Add behaviors to your Table model :
 
 	public function initialize(array $config)
 	{
-        $this->addBehavior('Taxonomy.Taxonomy');
+        $this->addBehavior('Taxonomy.TaxonomySync');
+        $this->addBehavior('Taxonomy.TaxonomyFinder');
     }
 
-    The Taxonomy plugin will be automatically associated to your model.
+    TaxonomySync Behavior create/update/clean your terms.
+    TaxonomyFinder Behavior manage all kind of queries. If you don't want to overload your queries, dettach it on the fly.
+
+    The Taxonomy plugin use polymorph associations, so it is automatically associated to your model.
 
 ### 4 - Use the TaxonomyHelper to add tags to your content.
 
@@ -29,13 +38,10 @@ Add the helper to your content controller.
 	public $helpers = ['Taxonomy.Taxonomy'];
 
 After each query on your content, the plugin will return an object and an array of terms attached to your content.
-The array is used to inject terms in the form.
+The first parameter 'tag' will be used to group your terms in DB (don't translate this), the second must include your entity object, the third is an array of cakephp form params (label, row etc.) e.g. for a french form :
 
-The array path is like **$myContent['terms_format']['tag']** or **$myContent['terms_format']['category']** or whatever you used in your input to name your taxonomy.
-
-the first parameter 'tag' will be used to group your terms. An example of form :
-
-	<?= $this->Taxonomy->input('tag', ['rows' => '2', 'value' => $article['terms_format']['tag']]) ?>
+	<?= $this->Taxonomy->input('tag', $article, ['label' => __d('Taxonomy', 'Mots clés')]) ?>
+	<?= $this->Taxonomy->input('category', $article, ['label' => __d('Taxonomy', 'Categorie')]) ?>
 
 ### 5 - Use it !
 
