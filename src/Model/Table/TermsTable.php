@@ -5,8 +5,15 @@ use Cake\ORM\Table;
 use Cake\ORM\Query;
 use Cake\ORM\Entity;
 use Cake\Event\Event;
+use Cake\Core\Configure;
 
 class TermsTable extends TaxonomiesAppTable {
+
+	// Locked key name
+	protected $_lockedKey = '_locked';
+
+	// Locked value, default to false
+	protected $_locked = false;
 
 	/**
 	 * Initialize
@@ -92,6 +99,7 @@ class TermsTable extends TaxonomiesAppTable {
 
 			foreach($entity->Taxonomy as $type => $terms)
 			{
+
 				// Implode input data to array and delete duplicate values.
 				$termsInput = array_unique($this->_makeArray($terms));
 
@@ -99,7 +107,7 @@ class TermsTable extends TaxonomiesAppTable {
 				$termsSaved = $this->termsrelationships->findAllByReferenceIDAndType($entity->id, $type);
 
 				// Saved Terms Object To Array.
-				$termSavedArray = [];
+				$termSavedArray = array();
 
 				foreach ($termsSaved as $termSaved)
 				{
@@ -144,6 +152,7 @@ class TermsTable extends TaxonomiesAppTable {
 
 				// Add and get the id of created/updated term
 				$termID = $this->addTerm($data);
+
 				if ($termID)
 				{
 					$added[] = $this->termsrelationships->addRelationship($entity, $termID, $table);
@@ -198,15 +207,24 @@ class TermsTable extends TaxonomiesAppTable {
 	 */
 	public function afterSave(Event $event, Entity $entity)
 	{
-		// Clean DB from unused terms. (by counter cache value)
-		$termsNotUsed = $this->find()->where(['term_count =' => 0])->all();
+		// If _locked for this type is set to true in bootstrap file, don't clean DB
+		$this->_locked = Configure::read('Taxonomy.'.$entity->type.'.'.$this->_lockedKey);
 
-		foreach($termsNotUsed as $term)
+		if ($this->_locked === true)
 		{
-			$query = $this->query();
-			$query->delete()
-				->where(['id' => $term->id])
-				->execute();
+			return false;
+
+		} else {
+			// Clean DB from unused terms. (by counter cache value)
+			$termsNotUsed = $this->find()->where(['term_count =' => 0])->all();
+
+			foreach($termsNotUsed as $term)
+			{
+				$query = $this->query();
+				$query->delete()
+					->where(['id' => $term->id])
+					->execute();
+			}
 		}
 	}
 

@@ -9,25 +9,44 @@ class TaxonomyHelper extends AppHelper {
 
 	/**
      * Create taxonomy Input
-     * @param $type [e.g. Tag, Category...], $data (entity), array $options []
+     * @param $type [e.g. Tag, Category...], array $values ['entity' => array(), 'list' => array()], array $options []
      * @return Form
      */
-	public function input($type = null, $data = null,  array $options = [])
+	public function input($type = null, array $values = [], array $options = [])
 	{
 
-		if (isset($data['terms_format'][$type]) && ! is_null($data['terms_format'][$type]))
-		{
-
-			if(is_array($data['terms_format'][$type]))
+			// Select form type
+			if(isset($options['type']) && $options['type'] === 'select')
 			{
-				$options['value'] = implode(';', Hash::extract($data['terms_format'][$type], '{n}.title'));
-			} else {
-				$options['value'] = $data['terms_format'][$type];
+
+				$options['empty'] = true;
+
+				foreach($values['list'] as $key => $item)
+				{
+					$options['options'][$item->title] = $item->title;
+				}
+
+				if( isset($values['entity']['terms_format'][$type]) && is_array($values['entity']['terms_format'][$type]) && ! empty($values['entity']['terms_format'][$type]))
+				{
+					$options['value'] = $select['saved'] = Hash::combine(Hash::extract($values['entity']['terms_format'][$type], '{n}.title'), '{n}', '{n}');
+				}
+				return $this->Form->input('Taxonomy.'.$type, $options);
+
 			}
 
-		}
+			// Input form type
+			if(isset($values['entity']['terms_format'][$type]))
+				{
+				if(is_array($values['entity']['terms_format'][$type]))
+				{
+					$options['value'] = implode(';', Hash::extract($values['entity']['terms_format'][$type], '{n}.title'));
+				} else {
+					$options['value'] = $values['entity']['terms_format'][$type];
+				}
+			}
 
 		return $this->Form->input('Taxonomy.'.$type, $options);
+
 	}
 
 }
