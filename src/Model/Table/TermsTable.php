@@ -9,11 +9,17 @@ use Cake\Core\Configure;
 
 class TermsTable extends TaxonomiesAppTable {
 
-	// Locked key name
-	protected $_lockedKey = '_locked';
+	// Locked create key name
+	protected $_lockedCreateKey = '_lockedCreate';
 
-	// Locked value, default to false
-	protected $_locked = false;
+	// Locked create, default to false
+	protected $_lockedCreate = false;
+
+	// Locked auto clean db key name
+	protected $_lockedAutoCleanKey = '_lockedAutoClean';
+
+	// Locked auto clean db, default to false
+	protected $_lockedAutoClean = false;
 
 	/**
 	 * Initialize
@@ -41,7 +47,7 @@ class TermsTable extends TaxonomiesAppTable {
 	}
 
 	/**
-	 * Add a single Term without relationships.
+	 * Add a single Term without relationships. Client side
 	 * @param array $data
 	 */
 	public function addTerm(array $data = [])
@@ -52,7 +58,10 @@ class TermsTable extends TaxonomiesAppTable {
 			// Check if exists in DB
 			$term = $termSaved = $this->findFirstByTitleAndType($data['title'], $data['type']);
 
-			if (empty($termSaved))
+			// If locked is set to true, term can't be created from client forms (e.g. edit value with firebug)
+			$this->_lockedCreate = Configure::read('Taxonomy.'.$data['type'].'.'.$this->_lockedCreateKey);
+
+			if (empty($termSaved) && $this->_lockedCreate !== true)
 			{
 				$term = $this->newEntity($data);
 				if ( ! $this->save($term))
@@ -208,9 +217,9 @@ class TermsTable extends TaxonomiesAppTable {
 	public function afterSave(Event $event, Entity $entity)
 	{
 		// If _locked for this type is set to true in bootstrap file, don't clean DB
-		$this->_locked = Configure::read('Taxonomy.'.$entity->type.'.'.$this->_lockedKey);
+		$this->_lockedAutoClean = Configure::read('Taxonomy.'.$entity->type.'.'.$this->_lockedAutoCleanKey);
 
-		if ($this->_locked === true)
+		if ($this->_lockedAutoClean === true)
 		{
 			return false;
 

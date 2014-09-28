@@ -2,5 +2,8 @@
 
 use Cake\Core\Configure;
 
-Configure::write('Taxonomy.tag._locked', false);
-Configure::write('Taxonomy.category._locked', true);
+Configure::write('Taxonomy.tag._lockedCreate', false);
+Configure::write('Taxonomy.tag._lockedAutoClean', false);
+
+Configure::write('Taxonomy.category._lockedAutoClean', true);
+Configure::write('Taxonomy.category._lockedCreate', true);

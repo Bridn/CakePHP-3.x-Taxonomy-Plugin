@@ -1,6 +1,7 @@
 # CakePHP 3.x Taxonomy Plugin
 
 Simple Taxonomy Plugin, you will be able to add tags or categories etc. to your entity.
+This plugin doesn't implement nested data. Parents and order by left and right are not implemented.
 
 ### Requirements
 
@@ -43,7 +44,35 @@ The first parameter 'tag' will be used to group your terms in DB (don't translat
 	<?= $this->Taxonomy->input('tag', $article, ['label' => __d('Taxonomy', 'Mots clés')]) ?>
 	<?= $this->Taxonomy->input('category', $article, ['label' => __d('Taxonomy', 'Categorie')]) ?>
 
-### 5 - Queries in controller
+If you need a select box for categories e.g.
+
+	<?= $this->Taxonomy->input('category', ['entity' => $article, 'list' => $categories], ['type' => 'select', 'label' => __d('Taxonomy', 'Categorie'), 'multiple' => true]) ?>
+
+- "list" parameter must contain all your terms (by type - e.g. category), here we previously found all categories in our controller and set it to the view.
+
+	articles controller :
+
+	...
+	$categories = $this->{$this->name}->termsRelationships->terms->find()
+	->where(['type' => 'category'])
+	->all();
+	$this->set(compact('article', 'categories'));
+
+### 5 - Configuration
+
+You can disable auto cleaning terms in Taxonomy/bootstrap.php (it will not delete your terms automatically if they are not used, you have to manage it in an admin panel)
+This is essential for categories.
+
+	Configure::write('Taxonomy.category._lockedAutoClean', true);
+
+*Security issue :*
+You can also lock the create action from client side by setting this (if you want to manage your category in admin panel) :
+
+	Configure::write('Taxonomy.category._lockedCreate', true);
+
+Note : Change 'category' by your term type
+
+### 6 - Queries in controller
 
 To return all terms by table and type (articles controller) :
 
@@ -58,6 +87,6 @@ To return all relationships used by a table for a given term id (articles contro
 	$categories = $this->{$this->name}->listAllByTableAndByTerm($id);
 	$this->set(compact('categories'));
 
-### 6 - Note
+### 7 - Note
 
 Separate your words with ";"
